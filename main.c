@@ -83,6 +83,7 @@ static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
   uintmax_t x = 0;
   uintmax_t y = cnum(str1);
   uintmax_t w = 0;
+  uintmax_t v = y;
 
   if (0 == iters) {
     iters = 10;
@@ -103,11 +104,16 @@ static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
     arr[x] = y;
   }
 
+  if (v >= iters) {
+      printf("%s\n", "usage: shufi -i 1-100 -n 10");
+      return;
+  }
+
   /* index the newly created array
       and make sure that we dont print
       any "0" in here */
-  for (x = 0; z < restrict_iters; z++) {
-    while (0 == (w =arr[(uintmax_t)random() % iters])) {
+  for (z = 0; z < restrict_iters; z++) {
+    while (0 == (w = arr[(uintmax_t)random() % iters])) {
       continue;
     }
     printf("%" PRIuMAX "\n", w);
