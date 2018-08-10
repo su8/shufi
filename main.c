@@ -88,11 +88,7 @@ static void print_numbers(uintmax_t start, uintmax_t iters, uintmax_t restrict_i
       puts("time(NULL) failed");
       return;
   }
-  if (9999U < iters) {
-    print_usage();
-    return;
-  }
-  if (start >= iters) {
+  if ((9999U < iters) || (start >= iters)) {
     print_usage();
     return;
   }
