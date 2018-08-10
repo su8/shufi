@@ -24,10 +24,11 @@
 #include <time.h>
 #include <inttypes.h>
 
-static void print_numbers(uintmax_t, uintmax_t);
+static void print_numbers(uintmax_t, uintmax_t, uintmax_t);
 static uintmax_t cnum(char *);
 static void fill_strs(const char *);
 static void print_usage(void);
+static void generate_table(uintmax_t *, uintmax_t, uintmax_t);
 
 static const char doc[] = "Write a random permutation of the input lines to standard output.\vMandatory arguments to long options are mandatory for short options too.\n";
 const char *argp_program_version = "shufi 1.0.0";
@@ -38,7 +39,6 @@ static struct argp_option options[] =
   { .name = "head-count",    .key = 'n', .arg="COUNT", .doc = "output at most COUNT lines"  },
   { .doc = NULL }
 };
-static uintmax_t arr[10000U] = {0};
 static char str1[256] = {""};
 static char str2[256] = {""};
 static uintmax_t res_iters = 10U;
@@ -71,18 +71,16 @@ int main(int argc, char *argv[]) {
     print_usage();
     return EXIT_FAILURE;
   }
-  print_numbers(cnum(str2), res_iters);
+  print_numbers(cnum(str1), cnum(str2), res_iters);
 
   return EXIT_SUCCESS;
 }
 
-static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
+static void print_numbers(uintmax_t y, uintmax_t iters, uintmax_t restrict_iters) {
   time_t t;
+  uintmax_t arr[10000U] = {0};
   uintmax_t z = 0U;
-  uintmax_t x = 0U;
-  uintmax_t y = cnum(str1);
   uintmax_t w = 0U;
-  uintmax_t v = y;
 
   if (0U == iters) {
     iters = 10U;
@@ -95,18 +93,15 @@ static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
     print_usage();
     return;
   }
+  if (y >= iters) {
+    print_usage();
+    return;
+  }
   srandom((unsigned int)t);
 
   /* Fill the x-to-z range starting
    * from 0 to z */
-  for (; y < iters; y++, x++) {
-    arr[x] = y;
-  }
-
-  if (v >= iters) {
-    print_usage();
-    return;
-  }
+  generate_table(arr, iters, y);
 
   /* index the newly created array
       and make sure that we dont print
@@ -119,8 +114,11 @@ static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
   }
 }
 
-static uintmax_t cnum(char *str) {
-   return strtoumax(str ? str : "1000", (char **)NULL, 10);
+static void generate_table(uintmax_t *table, uintmax_t iters, uintmax_t y) {
+  uintmax_t x = 0U;
+  for (; y < iters; y++, x++) {
+    table[x] = y;
+  }
 }
 
 static void fill_strs(const char *s) {
@@ -146,6 +144,10 @@ static void fill_strs(const char *s) {
     *s2++ = *s;
   }
   *s2 = '\0';
+}
+
+static uintmax_t cnum(char *str) {
+   return strtoumax(str ? str : "1000", (char **)NULL, 10);
 }
 
 static void print_usage(void) {
