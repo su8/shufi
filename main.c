@@ -27,6 +27,7 @@
 static void print_numbers(uintmax_t, uintmax_t);
 static uintmax_t cnum(char *);
 static void fill_strs(const char *);
+static void print_usage(void);
 
 static const char doc[] = "Write a random permutation of the input lines to standard output.\vMandatory arguments to long options are mandatory for short options too.\n";
 const char *argp_program_version = "shufi 1.0.0";
@@ -37,17 +38,15 @@ static struct argp_option options[] =
   { .name = "head-count",    .key = 'n', .arg="COUNT", .doc = "output at most COUNT lines"  },
   { .doc = NULL }
 };
-static uintmax_t arr[10000] = {0};
+static uintmax_t arr[10000U] = {0};
 static char str1[256] = {""};
 static char str2[256] = {""};
-static uintmax_t res_iters = 10;
+static uintmax_t res_iters = 10U;
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
   (void)state;
-
-  switch(key)
-  {
+  switch(key) {
     case 'i': 
       fill_strs(arg);
       break;
@@ -69,7 +68,7 @@ int main(int argc, char *argv[]) {
   argp_parse(&arg_parser, argc, argv, 0, NULL, NULL);
 
   if (argc < 2) {
-    printf("%s\n", "usage: shufi -i 1-100 -n 10");
+    print_usage();
     return EXIT_FAILURE;
   }
   print_numbers(cnum(str2), res_iters);
@@ -79,41 +78,41 @@ int main(int argc, char *argv[]) {
 
 static void print_numbers(uintmax_t iters, uintmax_t restrict_iters) {
   time_t t;
-  uintmax_t z = 0;
-  uintmax_t x = 0;
+  uintmax_t z = 0U;
+  uintmax_t x = 0U;
   uintmax_t y = cnum(str1);
-  uintmax_t w = 0;
+  uintmax_t w = 0U;
   uintmax_t v = y;
 
-  if (0 == iters) {
-    iters = 10;
+  if (0U == iters) {
+    iters = 10U;
   }
-
   if (-1 == (t = time(NULL))) {
-      printf("%s\n", "time(NULL) failed");
+      puts("time(NULL) failed");
       return;
   }
   if (9999U < restrict_iters) {
-      printf("%s\n", "usage: shufi -i 1-100 -n 10");
-      return;
+    print_usage();
+    return;
   }
   srandom((unsigned int)t);
 
-  /* Fill the x-to-z range */
+  /* Fill the x-to-z range starting
+   * from 0 to z */
   for (; y < iters; y++, x++) {
     arr[x] = y;
   }
 
   if (v >= iters) {
-      printf("%s\n", "usage: shufi -i 1-100 -n 10");
-      return;
+    print_usage();
+    return;
   }
 
   /* index the newly created array
       and make sure that we dont print
       any "0" in here */
-  for (z = 0; z < restrict_iters; z++) {
-    while (0 == (w = arr[(uintmax_t)random() % iters])) {
+  for (z = 0U; z < restrict_iters; z++) {
+    while (0U == (w = arr[(uintmax_t)random() % iters])) {
       continue;
     }
     printf("%" PRIuMAX "\n", w);
@@ -147,4 +146,8 @@ static void fill_strs(const char *s) {
     *s2++ = *s;
   }
   *s2 = '\0';
+}
+
+static void print_usage(void) {
+  puts("usage: shufi -i 1-100 -n 10");
 }
