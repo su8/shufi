@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   return EXIT_SUCCESS;
 }
 
-static void print_numbers(uintmax_t y, uintmax_t iters, uintmax_t restrict_iters) {
+static void print_numbers(uintmax_t start, uintmax_t iters, uintmax_t restrict_iters) {
   time_t t;
   uintmax_t arr[10000U] = {0};
   uintmax_t z = 0U;
@@ -88,11 +88,11 @@ static void print_numbers(uintmax_t y, uintmax_t iters, uintmax_t restrict_iters
       puts("time(NULL) failed");
       return;
   }
-  if (9999U < restrict_iters) {
+  if (9999U < iters) {
     print_usage();
     return;
   }
-  if (y >= iters) {
+  if (start >= iters) {
     print_usage();
     return;
   }
@@ -100,7 +100,7 @@ static void print_numbers(uintmax_t y, uintmax_t iters, uintmax_t restrict_iters
 
   /* Fill the x-to-z range starting
    * from 0 to z */
-  generate_table(arr, iters, y);
+  generate_table(arr, iters, start);
 
   /* index the newly created array
       and make sure that we dont print
@@ -113,10 +113,10 @@ static void print_numbers(uintmax_t y, uintmax_t iters, uintmax_t restrict_iters
   }
 }
 
-static void generate_table(uintmax_t *table, uintmax_t iters, uintmax_t y) {
+static void generate_table(uintmax_t *table, uintmax_t iters, uintmax_t start) {
   uintmax_t x = 0U;
-  for (; y < iters; y++, x++) {
-    table[x] = y;
+  for (; start < iters; start++, x++) {
+    table[x] = start;
   }
 }
 
@@ -146,7 +146,7 @@ static void fill_strs(const char *s) {
 }
 
 static uintmax_t cnum(char *str) {
-   return strtoumax(str ? str : "1000", (char **)NULL, 10);
+  return strtoumax(str ? str : "1000", (char **)NULL, 10);
 }
 
 static void print_usage(void) {
