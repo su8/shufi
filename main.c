@@ -17,11 +17,13 @@
    MA 02110-1301, USA.
 */
 #include <argp.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <inttypes.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 static void print_numbers(uintmax_t, uintmax_t, uintmax_t);
 static uintmax_t cnum(char *);
@@ -34,8 +36,8 @@ const char *argp_program_version = "shufi 1.0.0";
 static struct argp_option options[] =
 {
   { .doc = "" },
-  { .name = "input-range",   .key = 'i',  .arg="LO-HI, e.g: 1-100", .doc = "treat each number LO through HI as an input line" },
-  { .name = "head-count",    .key = 'n', .arg="COUNT", .doc = "output at most COUNT lines"  },
+  { .name = "input-range", .key = 'i', .arg="LO-HI, e.g: 1-100", .doc = "treat each number LO through HI as an input line" },
+  { .name = "head-count",  .key = 'n', .arg="COUNT",             .doc = "output at most COUNT lines"  },
   { .doc = NULL }
 };
 static char str1[256] = {""};
@@ -46,14 +48,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
   (void)state;
   switch(key) {
-    case 'i': 
-      fill_strs(arg);
-      break;
-    case 'n':
-      res_iters = cnum(arg);
-      break;
-    default:
-      return ARGP_ERR_UNKNOWN;
+    case 'i': fill_strs(arg);        break;
+    case 'n': res_iters = cnum(arg); break;
+    default: return ARGP_ERR_UNKNOWN;
   }
   return EXIT_SUCCESS;
 }
@@ -71,7 +68,6 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
   print_numbers(cnum(str1), cnum(str2), res_iters);
-
   return EXIT_SUCCESS;
 }
 
@@ -92,7 +88,7 @@ static void print_numbers(uintmax_t start, uintmax_t iters, uintmax_t restrict_i
     print_usage();
     return;
   }
-  srandom((unsigned int)t);
+  srandom((unsigned int)t ^ ((unsigned int)getpid()));
 
   /* Fill the x-to-z range starting
    * from 0 to z */
@@ -125,7 +121,6 @@ static void fill_strs(const char *s) {
     snprintf(str2, 255, "%s", "10");
     return;
   }
-
   for (; *s && *s != '-'; s++) {
     *s1++ = *s;
   }
